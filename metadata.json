@@ -1,0 +1,5 @@
+{
+  "name": "ROS Control Hub",
+  "description": "A web-based interface to connect to and control a robot using ROS (Robot Operating System). It allows users to teleoperate the robot, subscribe to various ROS topics to visualize data like odometry and laser scans, and publish messages to topics.",
+  "requestFramePermissions": []
+}

@@ -1,0 +1,21 @@
+{
+  "short_name": "ROS Hub",
+  "name": "ROS Control Hub",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#1a202c",
+  "theme_color": "#2563eb",
+  "description": "A web-based interface to connect to and control a robot using ROS.",
+  "icons": [
+    {
+      "src": "icons/icon-192x192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "icons/icon-512x512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ]
+}
