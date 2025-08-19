@@ -1,0 +1,21 @@
+{
+  "name": "ROS Mobile Control Hub",
+  "short_name": "ROS Hub",
+  "description": "A web-based mobile interface to connect to and control ROS/ROS2 robots over a local network.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#111827",
+  "theme_color": "#0891B2",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+{
+  "name": "ROS Mobile Control Hub",
+  "description": "A web-based mobile interface to connect to and control ROS/ROS2 robots over a local network. Visualize topic data and control robot movement with a virtual joystick, specifically designed for publishing to the cmd_vel topic.",
+  "requestFramePermissions": []
+}
