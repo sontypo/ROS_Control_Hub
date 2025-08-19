@@ -1,0 +1,8 @@
+/* 
+  This file is intentionally left blank.
+  It exists to prevent a 404 Not Found error from appearing in server logs,
+  which can be caused by browser caching or extensions requesting a common file name.
+  
+  All application styling is handled by the Tailwind CSS CDN script, the Font Awesome
+  CDN link, and inline styles within the index.html file.
+*/

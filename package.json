@@ -1,0 +1,24 @@
+{
+  "name": "ros-mobile-control-hub",
+  "version": "1.0.0",
+  "description": "A Capacitor-based mobile interface for ROS/ROS2.",
+  "scripts": {
+    "build": "echo 'Build script needs to be configured to output to www folder. For now, manually copy files.' && mkdir -p www && cp -R ./*.html ./*.js ./*.css ./*.json ./*.ts services components www/ 2>/dev/null || :",
+    "sync:android": "npm run build && npx cap sync android",
+    "sync:ios": "npm run build && npx cap sync ios",
+    "open:android": "npx cap open android",
+    "open:ios": "npx cap open ios"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/cli": "^6.0.0",
+    "@capacitor/core": "^6.0.0",
+    "@capacitor/ios": "^6.0.0"
+  },
+  "author": "",
+  "license": "ISC"
+}
