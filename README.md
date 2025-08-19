@@ -43,7 +43,7 @@ Get up and running in 5 minutes. No development environment needed!
     roslaunch rosbridge_server rosbridge_websocket.launch
 
     # For ROS 2
-    ros2 launch rosbridge_server rosbridge_websocket_launch.py
+    ros2 launch rosbridge_server rosbridge_websocket_launch.xml address:=0.0.0.0
     ```
     This will start a server on `ws://<your_ip>:9090`.
 
