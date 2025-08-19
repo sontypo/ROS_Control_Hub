@@ -4,8 +4,6 @@
 
 The ROS Mobile Control Hub is a web-based application designed to connect to any ROS system on your local network. It provides an intuitive interface for teleoperation, a multi-modal visualization engine for topics, and tools for publishing messages, transforming your smartphone into a versatile robotics dashboard.
 
-![ROS Mobile Control Hub Screenshot](https://user-images.githubusercontent.com/assets/222946/218861214-e22e625a-4b20-4b22-a725-b82d3122c6c1.png)
-*(Image placeholder: A screenshot of the app running on a mobile device)*
 
 ---
 
