@@ -1,24 +1,49 @@
+# General Node.js and environment ignores
+# ----------------------------------------------------------------
+# Dependencies
+node_modules/
+
 # Logs
 logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# macOS specific
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+
+
+# Capacitor & Web Build ignores
+# ----------------------------------------------------------------
+# The 'www' folder is the output of your web app build and is not source code.
+www/
+
+# Capacitor cache and state directory
+.capacitor/
+
+
+# Native Platform ignores (Generated files WITHIN the native folders)
+# ----------------------------------------------------------------
+# IMPORTANT: The 'android/' and 'ios/' directories themselves are NOT ignored.
+# They are essential for services like Appflow to build your app.
+# We only ignore the temporary build artifacts generated inside them.
+
+# Android
+android/build/
+android/.gradle/
+android/app/build/
+android/captures/
+*.keystore
+
+# iOS
+ios/Pods/
+ios/build/
+ios/DerivedData/
