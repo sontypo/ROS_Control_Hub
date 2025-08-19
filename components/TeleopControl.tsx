@@ -1,11 +1,13 @@
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { RosService } from '../services/RosService';
 import { Twist } from '../types';
 import DPad from './DPad';
 import { 
     MAX_LINEAR_VELOCITY,
-    MAX_ANGULAR_VELOCITY
+    MAX_ANGULAR_VELOCITY,
+    LINEAR_VELOCITY_STEP,
+    ANGULAR_VELOCITY_STEP
 } from '../constants';
 
 interface TeleopControlProps {
@@ -19,53 +21,89 @@ const TeleopControl: React.FC<TeleopControlProps> = ({ rosService, isConnected }
         angular: { x: 0, y: 0, z: 0 },
     });
     
-    // This function is now responsible for periodically sending the current twist message.
-    const publishTwist = useCallback(() => {
-        if(isConnected) {
-            rosService.publishTwist(twist);
-        }
-    }, [rosService, twist, isConnected]);
+    // Use a ref to store the target velocity from the D-Pads.
+    // This prevents the main loop from re-rendering every time a button is pressed.
+    const targetVelocityRef = useRef({
+        linear: { x: 0, y: 0 },
+        angular: { z: 0 },
+    });
 
-    // Set up a 10Hz (100ms) interval to publish the twist message.
-    useEffect(() => {
-        const interval = setInterval(publishTwist, 100);
-        return () => clearInterval(interval);
-    }, [publishTwist]);
+    // D-Pad handlers now only update the target velocity reference.
+    const handleLinearChange = (dx: number, dy: number) => {
+        targetVelocityRef.current.linear.y = dx * MAX_LINEAR_VELOCITY; // Strafe left/right
+        targetVelocityRef.current.linear.x = dy * MAX_LINEAR_VELOCITY; // Forward/backward
+    };
     
-    // Resets all velocities to zero, effectively stopping the robot.
+    const handleAngularChange = (dx: number, dy: number) => {
+        targetVelocityRef.current.angular.z = -dx * MAX_ANGULAR_VELOCITY;
+    };
+
+    // The main update loop for acceleration/deceleration and publishing.
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (!isConnected) return;
+
+            setTwist(currentTwist => {
+                const target = targetVelocityRef.current;
+                
+                // Helper function to ramp a value towards a target by a step.
+                const ramp = (current: number, target: number, step: number, max: number): number => {
+                    if (Math.abs(current - target) < step) {
+                        return target;
+                    }
+                    let newVelocity = current;
+                    if (current < target) {
+                        newVelocity += step;
+                    } else if (current > target) {
+                        newVelocity -= step;
+                    }
+                    // Clamp the value to the maximum allowed velocity.
+                    return Math.max(-max, Math.min(max, newVelocity));
+                };
+
+                const newTwist: Twist = {
+                    linear: {
+                        x: ramp(currentTwist.linear.x, target.linear.x, LINEAR_VELOCITY_STEP, MAX_LINEAR_VELOCITY),
+                        y: ramp(currentTwist.linear.y, target.linear.y, LINEAR_VELOCITY_STEP, MAX_LINEAR_VELOCITY),
+                        z: 0
+                    },
+                    angular: {
+                        x: 0,
+                        y: 0,
+                        z: ramp(currentTwist.angular.z, target.angular.z, ANGULAR_VELOCITY_STEP, MAX_ANGULAR_VELOCITY)
+                    }
+                };
+
+                // Publish only if the robot is moving or needs to stop.
+                if (
+                    newTwist.linear.x !== 0 || newTwist.linear.y !== 0 || newTwist.angular.z !== 0 ||
+                    currentTwist.linear.x !== 0 || currentTwist.linear.y !== 0 || currentTwist.angular.z !== 0
+                ) {
+                    rosService.publishTwist(newTwist);
+                }
+
+                return newTwist;
+            });
+        }, 100); // Loop runs at 10Hz
+
+        return () => clearInterval(interval);
+    }, [isConnected, rosService]); // This effect has stable dependencies.
+
+    // Stop resets both the target and the current velocity immediately.
     const stopMovement = () => {
-        setTwist({
+        targetVelocityRef.current = {
+            linear: { x: 0, y: 0 },
+            angular: { z: 0 },
+        };
+        const zeroTwist = {
             linear: { x: 0, y: 0, z: 0 },
             angular: { x: 0, y: 0, z: 0 },
-        });
+        };
+        setTwist(zeroTwist);
+        if (isConnected) {
+            rosService.publishTwist(zeroTwist);
+        }
     }
-
-    // Handles changes from the linear velocity D-pad.
-    // dx/dy are -1, 0, or 1, representing the direction.
-    const handleLinearChange = (dx: number, dy: number) => {
-        setTwist(prev => ({
-            ...prev,
-            linear: {
-                // Directly set velocity based on D-pad input, creating joystick-like behavior.
-                x: dy * MAX_LINEAR_VELOCITY, // Forward/backward
-                y: dx * MAX_LINEAR_VELOCITY, // Strafe left/right
-                z: 0
-            }
-        }));
-    };
-    
-    // Handles changes from the angular velocity D-pad.
-    const handleAngularChange = (dx: number, dy: number) => {
-        setTwist(prev => ({
-            ...prev,
-            angular: {
-                x: 0,
-                y: 0,
-                // The horizontal axis of the D-pad controls rotation.
-                z: -dx * MAX_ANGULAR_VELOCITY
-            }
-        }));
-    };
 
     if (!isConnected) {
         return <div className="text-center text-gray-500 py-10">Connect to a ROS system to enable teleoperation controls.</div>;
@@ -110,3 +148,4 @@ const TeleopControl: React.FC<TeleopControlProps> = ({ rosService, isConnected }
 };
 
 export default TeleopControl;
+
